@@ -21,7 +21,7 @@ st.markdown(page_bg_img, unsafe_allow_html=True)
 
 # Load existing transaction history from a CSV file
 transaction_history = pd.read_csv("piggy_bank_transactions.csv") if "piggy_bank_transactions.csv" in os.listdir(
-) else pd.DataFrame(columns=["Type", "Date", "Amount", "Label/Reason","Category"])
+) else pd.DataFrame(columns=["Type", "Date", "Amount", "Label/Reason", "Category"])
 balance = transaction_history['Amount'].sum()
 
 st.title("Welcome to Piggy Bank")
@@ -55,7 +55,8 @@ with col2:
     withdraw_amount = st.number_input(
         "Withdraw Amount", min_value=0.01, step=0.01)
     withdraw_reason = st.text_input("Reason")  # Unique key
-    withdraw_category = st.selectbox("Spent on", ["Select a category...", "Food", "Games", "Books", "Activity", "Other"])
+    withdraw_category = st.selectbox(
+        "Spent on", ["Select a category...", "Food", "Games", "Books", "Activity", "Other"])
     if st.button("Withdraw"):
         if withdraw_category == "Select a category...":
             st.warning("Please select a valid category.")
@@ -63,27 +64,27 @@ with col2:
             if withdraw_amount <= balance:
                 balance -= withdraw_amount  # Update the balance by subtracting the withdrawal amount
                 transaction_history = transaction_history.append({"Type": "Withdrawal", "Date": withdraw_date,
-                                                                "Amount": -withdraw_amount, "Label/Reason": withdraw_reason,
-                                                                "Category": withdraw_category},
-                                                                ignore_index=True)
+                                                                  "Amount": -withdraw_amount, "Label/Reason": withdraw_reason,
+                                                                  "Category": withdraw_category},
+                                                                 ignore_index=True)
             else:
                 st.warning("Withdrawal amount exceeds current balance.")
 
 with col1:
     # Home page to display balance
-    st.header("Piggy Bank Balance")
-    st.write(f"Current Balance: ${balance:.2f}")
+    st.header(f"Piggy Bank Balance: ${balance: .2f}")
 
     # Save the transaction history to a CSV file (optional)
     transaction_history.to_csv("piggy_bank_transactions.csv", index=False)
 
     # New: Plotting a graph
     st.header("Spending Categories")
-    withdrawals = transaction_history[transaction_history['Type'] == 'Withdrawal']
-    spending_categories = withdrawals.groupby("Category")["Amount"].sum().abs().reset_index()
+    withdrawals = transaction_history[transaction_history['Type']
+                                      == 'Withdrawal']
+    spending_categories = withdrawals.groupby(
+        "Category")["Amount"].sum().abs().reset_index()
 
     # Set 'Category' as the index to use it as x-axis labels in the bar chart
     spending_categories = spending_categories.set_index('Category')
 
     st.bar_chart(spending_categories.rename(columns={"Amount": "Spending"}))
-

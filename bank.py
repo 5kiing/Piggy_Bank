@@ -81,4 +81,9 @@ with col1:
     st.header("Spending Categories")
     withdrawals = transaction_history[transaction_history['Type'] == 'Withdrawal']
     spending_categories = withdrawals.groupby("Category")["Amount"].sum().abs().reset_index()
+
+    # Set 'Category' as the index to use it as x-axis labels in the bar chart
+    spending_categories = spending_categories.set_index('Category')
+
     st.bar_chart(spending_categories.rename(columns={"Amount": "Spending"}))
+
